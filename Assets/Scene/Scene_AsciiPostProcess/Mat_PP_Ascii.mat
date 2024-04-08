@@ -29,10 +29,13 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Contrast: 1.6
-    - _Density: 40.8
+    - _Contrast: 1
+    - _CustomDownsample: 29.6
+    - _Density: 43.3
+    - _DownSample: 30
     - _Intensity: 1.73
     m_Colors:
-    - _TestFac: {r: 20.9, g: 15, b: 15.9, a: 15}
+    - _CustomDownsample: {r: 1.5, g: 16.8, b: 1, a: 1}
+    - _TestFac: {r: 0.29, g: 0, b: 15.9, a: 15}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

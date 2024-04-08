@@ -34,10 +34,10 @@ internal class AsciiRendererFeature : ScriptableRendererFeature
     }
 
     public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
-    {
-            renderer.EnqueuePass(m_RenderPass);
-            //m_RenderPass.ConfigureInput(ScriptableRenderPassInput.Color);
-            //m_RenderPass.ConfigureInput(ScriptableRenderPassInput.Normal);
+    {       
+        renderer.EnqueuePass(m_RenderPass);
+        //m_RenderPass.ConfigureInput(ScriptableRenderPassInput.Color);
+        //m_RenderPass.ConfigureInput(ScriptableRenderPassInput.Normal);
 
     }
 
