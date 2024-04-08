@@ -11,10 +11,11 @@ public class AsciiTexGenerator : EditorWindow
     string characters = "A";
     float fontScale = 0.5f;
     int tileSize = 32;
-    string fontType = "Courier";
+    string fontType = "Terminal";
 
     string texSavePath = "Assets/Scene/Scene_AsciiPostProcess";
     string texName = "Tex_AsciiTex.png";
+    string filePath;
 
     [MenuItem("Tools/Ascii Texture Generator")]
     public static void ShowWindow()
@@ -39,9 +40,10 @@ public class AsciiTexGenerator : EditorWindow
         if (GUILayout.Button("Generate Texture"))
         {
             Texture2D texture = GenerateTexture(characters, tileSize);
-            string filePath = texSavePath + "/" + texName;
+            filePath = texSavePath + "/" + texName;
             // Save the texture to a file, replace "path_to_save" with your desired path
             System.IO.File.WriteAllBytes(filePath, texture.EncodeToPNG());
+            AssetDatabase.ImportAsset(filePath, ImportAssetOptions.ForceUpdate);
         }
     }
 
@@ -76,6 +78,7 @@ public class AsciiTexGenerator : EditorWindow
         }
         texture.Apply();
         Debug.Log("Save " + texName + " to " + texSavePath);
+        Debug.Log(filePath);
 
         return texture;
     }
