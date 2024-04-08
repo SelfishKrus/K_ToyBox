@@ -3,10 +3,11 @@ Shader "KrusShader/PostProcess/Ascii"
     Properties
     {   
         _Contrast ("Contrast", Float) = 2
-        _AsciiTex ("Ascii Texture", 2D) = "white" {}
+        _AsciiTex ("Ascii Texture", 2D) = "" {}
         _Density ("Density", Float) = 1
-
-        _DownSample ("Downsample", Float) = 1
+        _Tint ("Tint", Color) = (1,1,1,1)
+        [Toggle(_TINT_FROM_BLIT_TEX)] _TintFromBlitTex ("Tint From Blit Texture", Float) = 0
+        
 
         [Space(20)]
         _TestFac ("Test Factor", Vector) = (1,1,1,1)
@@ -28,6 +29,7 @@ Shader "KrusShader/PostProcess/Ascii"
 
             #pragma vertex Vert
             #pragma fragment frag
+            #pragma multi_compile _ _TINT_FROM_BLIT_TEX
 
             CBUFFER_START(UnityPerMaterial)
             float _Contrast;
@@ -35,6 +37,7 @@ Shader "KrusShader/PostProcess/Ascii"
             float4 _AsciiTex_TexelSize;
             float _DownSample;
             float _Density;
+            half3 _Tint;
             float4 _TestFac;
             CBUFFER_END
 
@@ -59,25 +62,26 @@ Shader "KrusShader/PostProcess/Ascii"
                 float screenRatio = _ScreenParams.x / _ScreenParams.y;
                 float charCount = _AsciiTex_TexelSize.z / _AsciiTex_TexelSize.w;
 
-                float3 blitCol = SAMPLE_TEXTURE2D(_BlitTexture, sampler_BlitTexture, input.texcoord);
+                half3 blitCol = SAMPLE_TEXTURE2D(_BlitTexture, sampler_BlitTexture, input.texcoord).rgb;
                 float floorBlitGray = floor(Desaturate(blitCol) * (charCount-1)) / (charCount-1);
+                floorBlitGray = pow(floorBlitGray, _Contrast);
+
+                // remap from floorBlitGray to charUV.x
                 float stepGray = 1 / (charCount -1);
                 float stepU = 1 / charCount;
                 float index = floorBlitGray / stepGray;
 
-                float2 charUV = (input.texcoord+float2(-0.5f, 0.0f)) * _ScreenParams.xy / (_DownSample); // wrap around
-                //charUV += float2(-0.5f, 0.0f);
-                charUV.x /= charCount;
-                charUV = frac(charUV);
+                float2 charUV = (input.texcoord) * _ScreenParams.xy / (_DownSample); // wrap around
+                charUV.x /= charCount;  // stretch along u 
+                charUV = frac(charUV);  
                 charUV.x = charUV.x % stepU + index * stepU;
-                half4 asciiCol = SAMPLE_TEXTURE2D(_AsciiTex, sampler_AsciiTex, charUV);
 
-                half3 col = asciiCol;
+                half3 asciiCol = SAMPLE_TEXTURE2D(_AsciiTex, sampler_AsciiTex, charUV).rgb;
 
-                //col = asciiCol.a;
-                //col.g = (charUV.x + charUV.y) * 0.1f;
-                //col.r = floorBlitGray;
-                //col.b = 0;
+                half3 col = asciiCol * _Tint;
+                #ifdef _TINT_FROM_BLIT_TEX
+                    col *= blitCol;
+                #endif
 
                 return half4(col, 1.0f);
             }
