@@ -2,7 +2,6 @@ Shader "KrusShader/PostProcess/Ascii"
 {   
     Properties
     {   
-        _Contrast ("Contrast", Float) = 2
         _AsciiTex ("Ascii Texture", 2D) = "" {}
         _Density ("Density", Float) = 1
         _Tint ("Tint", Color) = (1,1,1,1)
@@ -32,7 +31,6 @@ Shader "KrusShader/PostProcess/Ascii"
             #pragma multi_compile _ _TINT_FROM_BLIT_TEX
 
             CBUFFER_START(UnityPerMaterial)
-            float _Contrast;
             float4 _AsciiTex_ST;
             float4 _AsciiTex_TexelSize;
             float _DownSample;
@@ -43,6 +41,7 @@ Shader "KrusShader/PostProcess/Ascii"
 
             SAMPLER(sampler_BlitTexture);
             TEXTURE2D(_AsciiTex);   SAMPLER(sampler_AsciiTex);
+            TEXTURE2D(_RemapTex);   SAMPLER(sampler_RemapTex);
 
             half Desaturate(half3 color)
             {
@@ -63,8 +62,8 @@ Shader "KrusShader/PostProcess/Ascii"
                 float charCount = _AsciiTex_TexelSize.z / _AsciiTex_TexelSize.w;
 
                 half3 blitCol = SAMPLE_TEXTURE2D(_BlitTexture, sampler_BlitTexture, input.texcoord).rgb;
-                float floorBlitGray = floor(Desaturate(blitCol) * (charCount-1)) / (charCount-1);
-                floorBlitGray = pow(floorBlitGray, _Contrast);
+                float floorBlitGray = SAMPLE_TEXTURE2D(_RemapTex, sampler_RemapTex, float2(Desaturate(blitCol),0));
+                //float floorBlitGray = SAMPLE_TEXTURE2D(_RemapTex, sampler_RemapTex, input.texcoord);
 
                 // remap from floorBlitGray to charUV.x
                 float stepGray = 1 / (charCount -1);
@@ -82,6 +81,8 @@ Shader "KrusShader/PostProcess/Ascii"
                 #ifdef _TINT_FROM_BLIT_TEX
                     col *= blitCol;
                 #endif
+
+                //col = floorBlitGray;
 
                 return half4(col, 1.0f);
             }

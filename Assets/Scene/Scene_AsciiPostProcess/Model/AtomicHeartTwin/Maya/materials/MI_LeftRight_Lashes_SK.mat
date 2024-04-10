@@ -1,0 +1,12 @@
+Diffuse=T_LeftRight_Lashes_D
+Normal=T_LeftRight_Lashes_N
+Other[0]=T_LeftRight_Lashes_ORM
+Other[1]=T_LeftRight_Lashes_TOE
+Other[2]=BlendFunc_DefBase
+Other[3]=BlendFunc_DefBlend
+Other[4]=Good64x64TilingNoiseHighFreq
+Other[5]=T_CamSignal_ScanPixel
+Other[6]=T_Base_D
+Other[7]=T_Base_N
+Other[8]=T_Base_ORM
+Other[9]=T_Base_TOEH

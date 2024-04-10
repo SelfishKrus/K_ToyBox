@@ -63,6 +63,7 @@ internal class AsciiRendererFeature : ScriptableRendererFeature
         RTHandle m_cameraColorTarget;
         RTHandle rtTempColor0, rtTempColor1;
         AsciiSettings m_settings;
+        Texture2D remapTex;
 
         public AsciiRenderPass(AsciiSettings settings)
         {   
@@ -145,6 +146,8 @@ internal class AsciiRendererFeature : ScriptableRendererFeature
         {
             material.SetInt("_DownSample", settings.downSample);
         }
+
+
 
         #endregion
     }
